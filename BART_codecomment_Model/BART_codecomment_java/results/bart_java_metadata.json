@@ -1,0 +1,5 @@
+{
+    "Model Evaluated": "BART-base Java",
+    "Model Path": "/mnt/c/ModelTrain/Econder-Decoder/BART_codecomment_Model/BART_codecomment_java/models/BART-finetuned_model",
+    "Test File": "/mnt/c/ModelTrain/Econder-Decoder/data_collection/java_only/test_data.json"
+}

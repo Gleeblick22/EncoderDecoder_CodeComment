@@ -1,0 +1,5 @@
+{
+    "Model Evaluated": "BART-base Python-only",
+    "Model Path": "/mnt/c/ModelTrain/Econder-Decoder/BART_codecomment_Model/BART_codecomment_python/models/BART-finetune_dmodel",
+    "Test File": "/mnt/c/ModelTrain/Econder-Decoder/data_collection/python_only/test_data.json"
+}

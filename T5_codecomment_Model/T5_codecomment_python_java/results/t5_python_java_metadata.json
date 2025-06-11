@@ -1,0 +1,5 @@
+{
+    "Model Evaluated": "T5 Python + Java",
+    "Model Path": "/mnt/c/ModelTrain/Econder-Decoder/T5_codecomment_Model/T5_codecomment_python_java/models/T5_Finetuned_model",
+    "Test File": "/mnt/c/ModelTrain/Econder-Decoder/data_collection/combined/test_data.json"
+}
