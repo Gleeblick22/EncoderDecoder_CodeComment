@@ -1,0 +1,16 @@
+name: code-comment-gen
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.9
+  - pip
+  - pip:
+      - torch>=1.13
+      - transformers>=4.40
+      - datasets
+      - sentence-transformers
+      - nltk
+      - evaluate
+      - tqdm
+      - scikit-learn

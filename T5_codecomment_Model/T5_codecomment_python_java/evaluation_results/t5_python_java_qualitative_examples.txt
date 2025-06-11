@@ -1,0 +1,456 @@
+Model Evaluated: T5 Python + Java
+======================================================================
+
+ID: 0
+Code Snippet: def expand_to_tensor_dim(t, n):
+    """
+    Expand a type to the desired tensor dimension if possible
+    Raise an error otherwise.
+    - t is the given type
+    - n is a number of dimensions to expand to
+    """
+    if t == Dyn:
+        dims = [Dyn] * n
+        return TensorType(tuple(dims))
+    elif isinstance(t, TensorType):
+        if len(t.__args__) != n:
+            raise TypeError(f'Cannot extend tensor. Tensor {t} has rank {len(t.__args__)}. It should have rank {n}')
+        return t
+    else:
+        raise TypeError(f'Cannot match the type {t}')
+Human Comment: Expand a type to the desired tensor dimension if possible
+Raise an error otherwise.
+- t is the given type
+- n is a number of dimensions to expand to
+Model Generated Comment: Expand a type to the desired tensor dimension if possible Raise an error otherwise. - t is the given type n is a number of dimensions to expand to
+======================================================================
+
+ID: 1
+Code Snippet: def _insert_dequant_stubs_for_custom_module_lstm_output(node: Node, model: torch.nn.Module, named_modules: dict[str, torch.nn.Module], graph: Graph) -> Node:
+    """
+    Insert DeQuantStubs after each internal output node of custom module LSTM.
+
+    Custom module LSTM outputs are nested tuples of the structure (output, (hidden0, hidden1)),
+    Since we cannot dequantize a tuple as a whole, we must first break down the tuple into its
+    components through `getitem`. This function transforms the graph as follows:
+
+      (1) Split the LSTM node into (output, (hidden0, hidden1))
+      (2) Insert a DeQuantStub after each internal node
+      (3) Recombine the DeQuantStubs into the same structure as before
+      (4) Reroute all consumers of the original LSTM node and its sub-nodes
+          (e.g. lstm[0])
+
+    Before:
+                   lstm_output
+                        |
+                        v
+                  original_user(s)
+    After:
+                   lstm_output
+                  /           \\
+                 /  (getitem)  \\
+                /               \\
+               v                 v
+             output            hidden
+               |               /   \\
+         (DeQuantStub)        (getitem)
+               |             /       \\
+               v            v         v
+           output_dq     hidden0    hidden1
+               |            |         |
+               |    (DeQuantStub) (DeQuantStub)
+               |            |         |
+               |            v         v
+               |      hidden0_dq  hidden1_dq
+               |            \\       /
+               |              (tuple)
+               |              \\   /
+               |               v  v
+               |             hidden_dq
+               \\               /
+                \\   (tuple)   /
+                 v            v
+                 lstm_output_dq
+                       |
+                       v
+                original_user(s)
+
+    For step (4), reroute all users of the original LSTM node(s) as follows:
+      lstm_output -> lstm_output_dq
+      lstm_output[0] -> output_dq
+      lstm_output[1] -> hidden_dq
+      lstm_output[1][0] -> hidden0_dq
+      lstm_output[1][1] -> hidden1_dq
+
+    Return the node `lstm_output_dq`.
+    """
+    with graph.inserting_after(node):
+        output = graph.call_function(operator.getitem, (node, 0))
+        output_dq = _insert_dequant_stub(output, model, named_modules, graph)
+    with graph.inserting_after(output_dq):
+        hidden = graph.call_function(operator.getitem, (node, 1))
+    with graph.inserting_after(hidden):
+        hidden0 = graph.call_function(operator.getitem, (hidden, 0))
+        hidden0_dq = _insert_dequant_stub(hidden0, model, named_modules, graph)
+    with graph.inserting_after(hidden0_dq):
+        hidden1 = graph.call_function(operator.getitem, (hidden, 1))
+        hidden1_dq = _insert_dequant_stub(hidden1, model, named_modules, graph)
+    with graph.inserting_after(hidden1_dq):
+        hidden_dq = graph.call_function(tuple, ([hidden0_dq, hidden1_dq],))
+    with graph.inserting_after(hidden_dq):
+        lstm_output_dq = graph.call_function(tuple, ([output_dq, hidden_dq],))
+    for user in list(node.users.keys()):
+        if user != output and user != hidden:
+            user.replace_input_with(node, lstm_output_dq)
+    _reroute_tuple_getitem_pattern(graph)
+    return lstm_output_dq
+Human Comment: Insert DeQuantStubs after each internal output node of custom module LSTM.
+
+Custom module LSTM outputs are nested tuples of the structure (output, (hidden0, hidden1)),
+Since we cannot dequantize a tuple as a whole, we must first break down the tuple into its
+components through `getitem`. This function transforms the graph as follows:
+
+  (1) Split the LSTM node into (output, (hidden0, hidden1))
+  (2) Insert a DeQuantStub after each internal node
+  (3) Recombine the DeQuantStubs into the same structure as before
+  (4) Reroute all consumers of the original LSTM node and its sub-nodes
+      (e.g. lstm[0])
+
+Before:
+               lstm_output
+                    |
+                    v
+              original_user(s)
+After:
+               lstm_output
+              /           \
+             /  (getitem)  \
+            /               \
+           v                 v
+         output            hidden
+           |               /   \
+     (DeQuantStub)        (getitem)
+           |             /       \
+           v            v         v
+       output_dq     hidden0    hidden1
+           |            |         |
+           |    (DeQuantStub) (DeQuantStub)
+           |            |         |
+           |            v         v
+           |      hidden0_dq  hidden1_dq
+           |            \       /
+           |              (tuple)
+           |              \   /
+           |               v  v
+           |             hidden_dq
+           \               /
+            \   (tuple)   /
+             v            v
+             lstm_output_dq
+                   |
+                   v
+            original_user(s)
+
+For step (4), reroute all users of the original LSTM node(s) as follows:
+  lstm_output -> lstm_output_dq
+  lstm_output[0] -> output_dq
+  lstm_output[1] -> hidden_dq
+  lstm_output[1][0] -> hidden0_dq
+  lstm_output[1][1] -> hidden1_dq
+
+Return the node `lstm_output_dq`.
+Model Generated Comment: Insert DeQuantStubs after each internal output node of custom module LSTM. Custom module LESTM outputs are nested tuples of the structure (output, (hidden0, hidden1)), Since we cannot dequantize a tuffle as a whole, we must first break down the tample into its components through getitem. This function transforms the graph as follows: (1) Split the LS® node into (outoutput (hiden0, hiding1)) (2) Insert a DeQu
+======================================================================
+
+ID: 2
+Code Snippet: def csv(self, path: str, mode: Optional[str]=None, compression: Optional[str]=None, sep: Optional[str]=None, quote: Optional[str]=None, escape: Optional[str]=None, header: Optional[Union[bool, str]]=None, nullValue: Optional[str]=None, escapeQuotes: Optional[Union[bool, str]]=None, quoteAll: Optional[Union[bool, str]]=None, dateFormat: Optional[str]=None, timestampFormat: Optional[str]=None, ignoreLeadingWhiteSpace: Optional[Union[bool, str]]=None, ignoreTrailingWhiteSpace: Optional[Union[bool, str]]=None, charToEscapeQuoteEscaping: Optional[str]=None, encoding: Optional[str]=None, emptyValue: Optional[str]=None, lineSep: Optional[str]=None) -> None:
+    """Saves the content of the :class:`DataFrame` in CSV format at the specified path.
+
+        .. versionadded:: 2.0.0
+
+        .. versionchanged:: 3.4.0
+            Supports Spark Connect.
+
+        Parameters
+        ----------
+        path : str
+            the path in any Hadoop supported file system
+        mode : str, optional
+            specifies the behavior of the save operation when data already exists.
+
+            * ``append``: Append contents of this :class:`DataFrame` to existing data.
+            * ``overwrite``: Overwrite existing data.
+            * ``ignore``: Silently ignore this operation if data already exists.
+            * ``error`` or ``errorifexists`` (default case): Throw an exception if data already \\
+                exists.
+
+        Other Parameters
+        ----------------
+        Extra options
+            For the extra options, refer to
+            `Data Source Option <https://spark.apache.org/docs/latest/sql-data-sources-csv.html#data-source-option>`_
+            for the version you use.
+
+            .. # noqa
+
+        Examples
+        --------
+        Write a DataFrame into a CSV file and read it back.
+
+        >>> import tempfile
+        >>> with tempfile.TemporaryDirectory(prefix="csv") as d:
+        ...     # Write a DataFrame into a CSV file
+        ...     df = spark.createDataFrame([{"age": 100, "name": "Hyukjin Kwon"}])
+        ...     df.write.csv(d, mode="overwrite")
+        ...
+        ...     # Read the CSV file as a DataFrame with 'nullValue' option set to 'Hyukjin Kwon'.
+        ...     spark.read.schema(df.schema).format("csv").option(
+        ...         "nullValue", "Hyukjin Kwon").load(d).show()
+        +---+----+
+        |age|name|
+        +---+----+
+        |100|NULL|
+        +---+----+
+        """
+    self.mode(mode)
+    self._set_opts(compression=compression, sep=sep, quote=quote, escape=escape, header=header, nullValue=nullValue, escapeQuotes=escapeQuotes, quoteAll=quoteAll, dateFormat=dateFormat, timestampFormat=timestampFormat, ignoreLeadingWhiteSpace=ignoreLeadingWhiteSpace, ignoreTrailingWhiteSpace=ignoreTrailingWhiteSpace, charToEscapeQuoteEscaping=charToEscapeQuoteEscaping, encoding=encoding, emptyValue=emptyValue, lineSep=lineSep)
+    self._jwrite.csv(path)
+Human Comment: Saves the content of the :class:`DataFrame` in CSV format at the specified path.
+
+.. versionadded:: 2.0.0
+
+.. versionchanged:: 3.4.0
+    Supports Spark Connect.
+
+Parameters
+----------
+path : str
+    the path in any Hadoop supported file system
+mode : str, optional
+    specifies the behavior of the save operation when data already exists.
+
+    * ``append``: Append contents of this :class:`DataFrame` to existing data.
+    * ``overwrite``: Overwrite existing data.
+    * ``ignore``: Silently ignore this operation if data already exists.
+    * ``error`` or ``errorifexists`` (default case): Throw an exception if data already \
+        exists.
+
+Other Parameters
+----------------
+Extra options
+    For the extra options, refer to
+    `Data Source Option <https://spark.apache.org/docs/latest/sql-data-sources-csv.html#data-source-option>`_
+    for the version you use.
+
+    .. # noqa
+
+Examples
+--------
+Write a DataFrame into a CSV file and read it back.
+
+>>> import tempfile
+>>> with tempfile.TemporaryDirectory(prefix="csv") as d:
+...     # Write a DataFrame into a CSV file
+...     df = spark.createDataFrame([{"age": 100, "name": "Hyukjin Kwon"}])
+...     df.write.csv(d, mode="overwrite")
+...
+...     # Read the CSV file as a DataFrame with 'nullValue' option set to 'Hyukjin Kwon'.
+...     spark.read.schema(df.schema).format("csv").option(
+...         "nullValue", "Hyukjin Kwon").load(d).show()
++---+----+
+|age|name|
++---+----+
+|100|NULL|
++---+----+
+Model Generated Comment: Saves the content of the :class:DataFrame in CSV format at the specified path... versionadded:: 2.0.0... versionchanged:: 3.4.0 Supports Spark Connect. Parameters ---------- path : str the path in any Hadoop supported file system mode : string, optional specifies the behavior of the save operation when data already exists. * append: Append contents of this : class: DataFramer to existing data. *
+======================================================================
+
+ID: 3
+Code Snippet: def tpu_core_locations_to_ids(self, tpu_core_locations):
+    """Translates TPU core locations to TPU core IDs.
+
+    Args:
+      tpu_core_locations: A list of TPU core locations. Each one is a list of
+        four unsigned integers, [x, y, z, core].
+
+    Returns:
+      A list of corresponding TPU core IDs.
+    """
+    return _pywrap_dtensor_device.TPUCoreLocationsToIDs(context.context()._handle, self._device_info, tpu_core_locations)
+Human Comment: Translates TPU core locations to TPU core IDs.
+
+Args:
+  tpu_core_locations: A list of TPU core locations. Each one is a list of
+    four unsigned integers, [x, y, z, core].
+
+Returns:
+  A list of corresponding TPU core IDs.
+Model Generated Comment: Translates TPU core locations to TPU key IDs. Args: tpu_core_locations: A list of TPU Core locations. Each one is a list of four unsigned integers, [x, y, z, core]. Returns: An list of corresponding TPU chip IDs
+======================================================================
+
+ID: 4
+Code Snippet: public static void assertNotEquals(float unexpected, float actual, float delta) {
+        assertNotEquals(null, unexpected, actual, delta);
+    }
+Human Comment: Asserts that two floats are <b>not</b> equal to within a positive delta.
+If they are, an {@link AssertionError} is thrown. If the unexpected
+value is infinity then the delta value is ignored.NaNs are considered
+equal: <code>assertNotEquals(Float.NaN, Float.NaN, *)</code> fails
+
+@param unexpected unexpected value
+@param actual the value to check against <code>unexpected</code>
+@param delta the maximum delta between <code>unexpected</code> and
+<code>actual</code> for which both numbers are still
+considered equal.
+Model Generated Comment: p>Assert/p> that @code unexpected and /code actual are equal.
+======================================================================
+
+ID: 5
+Code Snippet: def _read(self):
+    """
+        Read one page from the file. Return True if successful,
+        False if there were no more pages.
+        """
+    packet_char = packet_ends = None
+    packet_len = packet_width = None
+    while True:
+        byte = self.file.read(1)[0]
+        if self.state is _dvistate.inpage:
+            byte_at = self.file.tell() - 1
+            if byte_at == packet_ends:
+                self._finalize_packet(packet_char, packet_width)
+                packet_len = packet_char = packet_width = None
+            elif byte_at > packet_ends:
+                raise ValueError('Packet length mismatch in vf file')
+            else:
+                if byte in (139, 140) or byte >= 243:
+                    raise ValueError(f'Inappropriate opcode {byte} in vf file')
+                Dvi._dtable[byte](self, byte)
+                continue
+        if byte < 242:
+            packet_len = byte
+            packet_char = self._read_arg(1)
+            packet_width = self._read_arg(3)
+            packet_ends = self._init_packet(byte)
+            self.state = _dvistate.inpage
+        elif byte == 242:
+            packet_len = self._read_arg(4)
+            packet_char = self._read_arg(4)
+            packet_width = self._read_arg(4)
+            self._init_packet(packet_len)
+        elif 243 <= byte <= 246:
+            k = self._read_arg(byte - 242, byte == 246)
+            c = self._read_arg(4)
+            s = self._read_arg(4)
+            d = self._read_arg(4)
+            a = self._read_arg(1)
+            l = self._read_arg(1)
+            self._fnt_def_real(k, c, s, d, a, l)
+            if self._first_font is None:
+                self._first_font = k
+        elif byte == 247:
+            i = self._read_arg(1)
+            k = self._read_arg(1)
+            x = self.file.read(k)
+            cs = self._read_arg(4)
+            ds = self._read_arg(4)
+            self._pre(i, x, cs, ds)
+        elif byte == 248:
+            break
+        else:
+            raise ValueError(f'Unknown vf opcode {byte}')
+Human Comment: Read one page from the file. Return True if successful,
+False if there were no more pages.
+Model Generated Comment: Read one page from the file. Return True if successful, False if there were no more pages.
+======================================================================
+
+ID: 6
+Code Snippet: def name_scope(name, default_name=None, values=None, skip_on_eager=True) -> ContextManager[Optional[str]]:
+    """Internal-only entry point for `name_scope*`.
+
+  Internal ops do not use the public API and instead rely on
+  `ops.name_scope` regardless of the execution mode. This function
+  dispatches to the correct `name_scope*` implementation based on
+  the arguments provided and the current mode. Specifically,
+
+  * if `values` contains a graph tensor `Graph.name_scope` is used;
+  * `name_scope_v1` is used in graph mode;
+  * `name_scope_v2` -- in eager mode.
+
+  Args:
+    name: The name argument that is passed to the op function.
+    default_name: The default name to use if the `name` argument is `None`.
+    values: The list of `Tensor` arguments that are passed to the op function.
+    skip_on_eager: Indicates to return NullContextmanager if executing eagerly.
+      By default this is True since naming tensors and operations in eager mode
+      have little use and cause unnecessary performance overhead. However, it is
+      important to preserve variable names since they are often useful for
+      debugging and saved models.
+
+  Returns:
+    `name_scope*` context manager.
+  """
+    if not context.executing_eagerly():
+        return internal_name_scope_v1(name, default_name, values)
+    if skip_on_eager:
+        return NullContextmanager()
+    name = default_name if name is None else name
+    if values:
+        graph_value = next((value for value in values if is_symbolic_tensor(value)), None)
+        if graph_value is not None:
+            return graph_value.graph.name_scope(name)
+    return name_scope_v2(name or '')
+Human Comment: Internal-only entry point for `name_scope*`.
+
+Internal ops do not use the public API and instead rely on
+`ops.name_scope` regardless of the execution mode. This function
+dispatches to the correct `name_scope*` implementation based on
+the arguments provided and the current mode. Specifically,
+
+* if `values` contains a graph tensor `Graph.name_scope` is used;
+* `name_scope_v1` is used in graph mode;
+* `name_scope_v2` -- in eager mode.
+
+Args:
+  name: The name argument that is passed to the op function.
+  default_name: The default name to use if the `name` argument is `None`.
+  values: The list of `Tensor` arguments that are passed to the op function.
+  skip_on_eager: Indicates to return NullContextmanager if executing eagerly.
+    By default this is True since naming tensors and operations in eager mode
+    have little use and cause unnecessary performance overhead. However, it is
+    important to preserve variable names since they are often useful for
+    debugging and saved models.
+
+Returns:
+  `name_scope*` context manager.
+Model Generated Comment: Internal-only entry point for name_scope*. Internal ops do not use the public API and instead rely on ops. name_scope regardless of the execution mode. This function dispatches to the correct namen_scope * implementation based on the arguments provided and the current mode. Specifically, * if values contains a graph tensor Graph.name_sscope is used; * Name_scope_v1 is use in graph mode; *
+======================================================================
+
+ID: 7
+Code Snippet: def skip(self, params):
+    """Return True if the benchmark should be skipped for these params"""
+    return False
+Human Comment: Return True if the benchmark should be skipped for these params
+Model Generated Comment: Return True if the benchmark should be skipped for these params
+======================================================================
+
+ID: 8
+Code Snippet: def max_name_length(self):
+    """
+        Return the maximum length of table and column names, or None if there
+        is no limit.
+        """
+    return None
+Human Comment: Return the maximum length of table and column names, or None if there
+is no limit.
+Model Generated Comment: Return the maximum length of table and column names, or None if there is no limit.
+======================================================================
+
+ID: 9
+Code Snippet: def relate(self, other):
+    """Return the DE-9IM intersection matrix for this Geometry and the other."""
+    return capi.geos_relate(self.ptr, other.ptr).decode()
+Human Comment: Return the DE-9IM intersection matrix for this Geometry and the other.
+Model Generated Comment: Return the DE-9IM intersection matrix for this Geometry and the other.
+======================================================================
+

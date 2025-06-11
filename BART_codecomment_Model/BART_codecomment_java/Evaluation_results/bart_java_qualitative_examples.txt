@@ -1,0 +1,254 @@
+Model Evaluated: BART (Java only)
+======================================================================
+
+ID: 0
+Code Snippet: public static void assertFalse(boolean condition) {
+        assertFalse(null, condition);
+    }
+Human Comment: Asserts that a condition is false. If it isn't it throws
+an AssertionFailedError.
+Model Generated Comment: Asserts that a boolean condition is false.
+======================================================================
+
+ID: 1
+Code Snippet: public final void assertEventsMatchLoosely(Condition<? super Event>... conditions) {
+		Preconditions.notNull(conditions, "conditions must not be null");
+		Preconditions.containsNoNullElements(conditions, "conditions must not contain null elements");
+		assertEventsMatchLoosely(this.events, conditions);
+	}
+Human Comment: Assert that all provided conditions are matched by an {@linkplain Event event}
+contained in this {@code Events} object, regardless of order.
+
+<p>Note that this method performs a partial match. Thus, some events may
+not match any of the provided conditions.
+
+<p>Conditions can be imported statically from {@link EventConditions}
+and {@link TestExecutionResultConditions}.
+
+<h4>Example</h4>
+
+<pre class="code">
+executionResults.testEvents().assertEventsMatchLoosely(
+event(test("exampleTestMethod"), started()),
+event(test("exampleTestMethod"), finishedSuccessfully())
+);
+</pre>
+
+@param conditions the conditions to match against; never {@code null}
+@since 1.7
+@see #assertEventsMatchExactly(Condition...)
+@see #assertEventsMatchLooselyInOrder(Condition...)
+@see EventConditions
+@see TestExecutionResultConditions
+Model Generated Comment: <em>Assert</em> that {@link Event} and {@code conditions} are equal.
+
+<p>If they are not, the failure message will be retrieved lazily from the supplied
+{@link Events#compare(events, conditions)}.
+
+@since 5.4
+======================================================================
+
+ID: 2
+Code Snippet: private List<String> extractReactorBuildOrder(List<String> loadedLines) {
+        List<String> resultingLines = new LinkedList<>();
+        boolean start = false;
+        for (String line : loadedLines) {
+            if (start) {
+                if (line.startsWith("[INFO] -------------")) {
+                    start = false;
+                } else if (!line.endsWith("[INFO] ")) {
+                    resultingLines.add(line);
+                }
+            } else {
+                if (line.startsWith("[INFO] Reactor Build Order:")) {
+                    start = true;
+                }
+            }
+        }
+        return resultingLines;
+    }
+Human Comment: Extract the lines at the beginning of the Maven output:
+
+<pre>
+[INFO] Reactor Build Order:
+[INFO]
+[INFO] module-1
+[INFO] module-2
+[INFO] base-project
+[INFO]
+</pre>
+Model Generated Comment: Extract the ReactorBuild Order from the supplied list.
+
+@param loadedLines The loaded lines to extract, may be {@code null}.
+@return the resulting list
+======================================================================
+
+ID: 3
+Code Snippet: public T addSparkArg(String name, String value) {
+    SparkSubmitOptionParser validator = new ArgumentValidator(true);
+    if (validator.MASTER.equals(name)) {
+      setMaster(value);
+    } else if (validator.REMOTE.equals(name)) {
+      setRemote(value);
+    } else if (validator.PROPERTIES_FILE.equals(name)) {
+      setPropertiesFile(value);
+    } else if (validator.CONF.equals(name)) {
+      String[] vals = value.split("=", 2);
+      setConf(vals[0], vals[1]);
+    } else if (validator.CLASS.equals(name)) {
+      setMainClass(value);
+    } else if (validator.JARS.equals(name)) {
+      builder.jars.clear();
+      for (String jar : value.split(",")) {
+        addJar(jar);
+      }
+    } else if (validator.FILES.equals(name)) {
+      builder.files.clear();
+      for (String file : value.split(",")) {
+        addFile(file);
+      }
+    } else if (validator.PY_FILES.equals(name)) {
+      builder.pyFiles.clear();
+      for (String file : value.split(",")) {
+        addPyFile(file);
+      }
+    } else {
+      validator.parse(Arrays.asList(name, value));
+      builder.userArgs.add(name);
+      builder.userArgs.add(value);
+    }
+    return self();
+  }
+Human Comment: Adds an argument with a value to the Spark invocation. If the argument name corresponds to
+a known argument, the code validates that the argument actually expects a value, and throws
+an exception otherwise.
+<p>
+It is safe to add arguments modified by other methods in this class (such as
+{@link #setMaster(String)} - the last invocation will be the one to take effect.
+<p>
+Use this method with caution. It is possible to create an invalid Spark command by passing
+unknown arguments to this method, since those are allowed for forward compatibility.
+
+@since 1.5.0
+@param name Name of argument to add.
+@param value Value of the argument.
+@return This launcher.
+Model Generated Comment: Add a SparkArg to the argument.
+
+@param name the name of the argument
+@return true if the argument is valid
+======================================================================
+
+ID: 4
+Code Snippet: public void zip() {
+    JavaRDD<Integer> rdd = sc.parallelize(Arrays.asList(1, 2, 3, 4, 5));
+    JavaDoubleRDD doubles = rdd.mapToDouble(x -> 1.0 * x);
+    JavaPairRDD<Integer, Double> zipped = rdd.zip(doubles);
+    zipped.count();
+  }
+Human Comment: Try reading the output back as an object file
+Model Generated Comment: $example on$
+$example off$
+======================================================================
+
+ID: 5
+Code Snippet: public String execute(Order order) {
+    var result = super.execute(order);
+    var name = order.getName();
+    if (name == null || name.isEmpty() || name.matches(".*[^\\w|\\s]+.*")) {
+      return result + "Invalid name! ";
+    } else {
+      return result;
+    }
+  }
+Human Comment: Concrete implementation of filter. This filter checks if the input in the Name field is valid.
+(alphanumeric)
+Model Generated Comment: Execute the given order.
+
+@param order the order to execute
+@return the result
+======================================================================
+
+ID: 6
+Code Snippet: default Map<String, String> init(SparkContext sc, PluginContext pluginContext) {
+    return Collections.emptyMap();
+  }
+Human Comment: Initialize the plugin.
+<p>
+This method is called early in the initialization of the Spark driver. Explicitly, it is
+called before the Spark driver's task scheduler is initialized. This means that a lot
+of other Spark subsystems may yet not have been initialized. This call also blocks driver
+initialization.
+<p>
+It's recommended that plugins be careful about what operations are performed in this call,
+preferably performing expensive operations in a separate thread, or postponing them until
+the application has fully started.
+
+@param sc The SparkContext loading the plugin.
+@param pluginContext Additional plugin-specific about the Spark application where the plugin
+is running.
+@return A map that will be provided to the {@link ExecutorPlugin#init(PluginContext,Map)}
+method.
+Model Generated Comment: Create a new Map using the provided SparkContext.
+
+@param sc The SparkContext to add to the new Map.
+@return The new Map
+======================================================================
+
+ID: 7
+Code Snippet: public static DynamicTest dynamicTest(String displayName, Executable executable) {
+		return new DynamicTest(displayName, null, executable);
+	}
+Human Comment: Factory for creating a new {@code DynamicTest} for the supplied display
+@param executable the executable code block for the dynamic test;
+never {@code null}
+@see #stream(Iterator, Function, ThrowingConsumer)
+Model Generated Comment: Create a new {@link DynamicTest} with the supplied display name and executable.
+
+@param displayName the display name; never {@code null}
+@return a new dynamicTest
+======================================================================
+
+ID: 8
+Code Snippet: public void setProjects(List<MavenProject> projects) {
+        if (!projects.isEmpty()) {
+            MavenProject first = projects.get(0);
+            this.currentProject = ThreadLocal.withInitial(() -> first);
+            this.topLevelProject = projects.stream()
+                    .filter(project -> project.isExecutionRoot())
+                    .findFirst()
+                    .orElse(first);
+        } else {
+            this.currentProject = new ThreadLocal<>();
+            this.topLevelProject = null;
+        }
+        this.projects = projects;
+    }
+Human Comment: Plugin context keyed by project ({@link MavenProject#getId()}) and by plugin lookup key
+({@link PluginDescriptor#getPluginLookupKey()}). Plugin contexts itself are mappings of {@link String} keys to
+{@link Object} values.
+Model Generated Comment: Set the projects of the given project.
+
+@param projects The project to set, may be {@code null}.
+======================================================================
+
+ID: 9
+Code Snippet: void testGetColumnNumber() {
+        DefaultProblem problem = new DefaultProblem(null, null, null, -1, -1, null);
+        assertEquals(-1, problem.getColumnNumber());
+
+        problem = new DefaultProblem(null, null, null, -1, 42, null);
+        assertEquals(42, problem.getColumnNumber());
+
+        problem = new DefaultProblem(null, null, null, -1, Integer.MAX_VALUE, null);
+        assertEquals(Integer.MAX_VALUE, problem.getColumnNumber());
+
+        problem = new DefaultProblem(null, null, null, -1, Integer.MIN_VALUE, null);
+        assertEquals(Integer.MIN_VALUE, problem.getColumnNumber());
+    }
+Human Comment: this case is not specified, might also return -1
+Model Generated Comment: Unit tests for {@link DefaultProblem}.
+
+@param problem {@code null}
+======================================================================
+

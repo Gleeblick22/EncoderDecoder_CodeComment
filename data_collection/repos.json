@@ -1,0 +1,21 @@
+{
+    "https://github.com/django/django": "django",
+    "https://github.com/pallets/flask": "flask",
+    "https://github.com/keras-team/keras": "keras",
+    "https://github.com/matplotlib/matplotlib": "matplotlib",
+    "https://github.com/pandas-dev/pandas": "pandas",
+    "https://github.com/pytorch/pytorch": "pytorch",
+    "https://github.com/psf/requests": "requests",
+    "https://github.com/scikit-learn/scikit-learn": "scikit_learn",
+    "https://github.com/tensorflow/tensorflow": "tensorflow",
+    "https://github.com/android/architecture-components-samples": "android_architecture",
+    "https://github.com/brettwooldridge/HikariCP": "hikaricp",
+    "https://github.com/iluwatar/java-design-patterns": "java_design_patterns",
+    "https://github.com/junit-team/junit4": "junit4",
+    "https://github.com/junit-team/junit5": "junit5",
+    "https://github.com/apache/maven": "maven",
+    "https://github.com/apache/spark": "spark",
+    "https://github.com/android/sunflower": "sunflower",
+    "https://github.com/scrapy/scrapy": "scrapy"
+  }
+  

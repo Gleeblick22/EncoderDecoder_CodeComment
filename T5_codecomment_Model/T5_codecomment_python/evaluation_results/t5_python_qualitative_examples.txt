@@ -1,0 +1,890 @@
+Model: T5-Python Only
+======================================================================
+
+ID: 0
+Code Snippet: def test_estimator_html_repr_an_empty_pipeline():
+    """Check that the representation of an empty Pipeline does not fail.
+
+    Non-regression test for:
+    https://github.com/scikit-learn/scikit-learn/issues/30197
+    """
+    empty_pipeline = Pipeline([])
+    estimator_html_repr(empty_pipeline)
+Human Comment: Check that the representation of an empty Pipeline does not fail.
+
+Non-regression test for:
+https://github.com/scikit-learn/scikit-learn/issues/30197
+Model Generated Comment: Check that the representation of an empty Pipeline does not fail. Non-regression test for: https://github.com/scikit-learn/sciait-lean/issues/30197
+======================================================================
+
+ID: 1
+Code Snippet: def replace(self, **kwargs):
+    """Convenience method for making a new DeviceSpec by overriding fields.
+
+    For instance:
+    ```
+    my_spec = DeviceSpec=(job="my_job", device="CPU")
+    my_updated_spec = my_spec.replace(device="GPU")
+    my_other_spec = my_spec.replace(device=None)
+    ```
+
+    Args:
+      **kwargs: This method takes the same args as the DeviceSpec constructor
+
+    Returns:
+      A DeviceSpec with the fields specified in kwargs overridden.
+    """
+    init_kwargs = dict(job=self.job, replica=self.replica, task=self.task, device_type=self.device_type, device_index=self.device_index)
+    init_kwargs.update(kwargs)
+    return self.__class__(**init_kwargs)
+Human Comment: Convenience method for making a new DeviceSpec by overriding fields.
+
+For instance:
+```
+my_spec = DeviceSpec=(job="my_job", device="CPU")
+my_updated_spec = my_spec.replace(device="GPU")
+my_other_spec = my_spec.replace(device=None)
+```
+
+Args:
+  **kwargs: This method takes the same args as the DeviceSpec constructor
+
+Returns:
+  A DeviceSpec with the fields specified in kwargs overridden.
+Model Generated Comment: Convenience method for making a new DeviceSpec by overriding fields. For instance:  my_spec = DeviceSpec=(job="my_job", device="CPU") my_updated_spec=my_spec.replace(device="GPU" my_other_spec + my-spec.reaplace(none)  Args: **kwargs: This method takes the same args as the DeviceSpec constructor Returns: A DeviceSpec with the fields specified in kwar
+======================================================================
+
+ID: 2
+Code Snippet: def generate_regular_range(start: Timestamp | Timedelta | None, end: Timestamp | Timedelta | None, periods: int | None, freq: BaseOffset, unit: str='ns') -> npt.NDArray[np.intp]:
+    """
+    Generate a range of dates or timestamps with the spans between dates
+    described by the given `freq` DateOffset.
+
+    Parameters
+    ----------
+    start : Timedelta, Timestamp or None
+        First point of produced date range.
+    end : Timedelta, Timestamp or None
+        Last point of produced date range.
+    periods : int or None
+        Number of periods in produced date range.
+    freq : Tick
+        Describes space between dates in produced date range.
+    unit : str, default "ns"
+        The resolution the output is meant to represent.
+
+    Returns
+    -------
+    ndarray[np.int64]
+        Representing the given resolution.
+    """
+    istart = start._value if start is not None else None
+    iend = end._value if end is not None else None
+    freq.nanos
+    td = Timedelta(freq)
+    b: int
+    e: int
+    try:
+        td = td.as_unit(unit, round_ok=False)
+    except ValueError as err:
+        raise ValueError(f'freq={freq} is incompatible with unit={unit}. Use a lower freq or a higher unit instead.') from err
+    stride = int(td._value)
+    if periods is None and istart is not None and (iend is not None):
+        b = istart
+        e = b + (iend - b) // stride * stride + stride // 2 + 1
+    elif istart is not None and periods is not None:
+        b = istart
+        e = _generate_range_overflow_safe(b, periods, stride, side='start')
+    elif iend is not None and periods is not None:
+        e = iend + stride
+        b = _generate_range_overflow_safe(e, periods, stride, side='end')
+    else:
+        raise ValueError("at least 'start' or 'end' should be specified if a 'period' is given.")
+    return range_to_ndarray(range(b, e, stride))
+Human Comment: Generate a range of dates or timestamps with the spans between dates
+described by the given `freq` DateOffset.
+
+Parameters
+----------
+start : Timedelta, Timestamp or None
+    First point of produced date range.
+end : Timedelta, Timestamp or None
+    Last point of produced date range.
+periods : int or None
+    Number of periods in produced date range.
+freq : Tick
+    Describes space between dates in produced date range.
+unit : str, default "ns"
+    The resolution the output is meant to represent.
+
+Returns
+-------
+ndarray[np.int64]
+    Representing the given resolution.
+Model Generated Comment: Generate a range of dates or timestamps with the spans between dates described by the given freq DateOffset. Parameters ---------- start : Timedelta, Timestamp or None First point of produced date range. end :Timedelta, Timestab or None Last point ofproduced date range. periods : int or None Number of periods in produced time range. freq : Tick Describes space between dates in produced data range. unit : str, default "ns
+======================================================================
+
+ID: 3
+Code Snippet: def _make_validation_split(self, y, sample_mask):
+    """Split the dataset between training set and validation set.
+
+        Parameters
+        ----------
+        y : ndarray of shape (n_samples, )
+            Target values.
+
+        sample_mask : ndarray of shape (n_samples, )
+            A boolean array indicating whether each sample should be included
+            for validation set.
+
+        Returns
+        -------
+        validation_mask : ndarray of shape (n_samples, )
+            Equal to True on the validation set, False on the training set.
+        """
+    n_samples = y.shape[0]
+    validation_mask = np.zeros(n_samples, dtype=np.bool_)
+    if not self.early_stopping:
+        return validation_mask
+    if is_classifier(self):
+        splitter_type = StratifiedShuffleSplit
+    else:
+        splitter_type = ShuffleSplit
+    cv = splitter_type(test_size=self.validation_fraction, random_state=self.random_state)
+    idx_train, idx_val = next(cv.split(np.zeros(shape=(y.shape[0], 1)), y))
+    if not np.any(sample_mask[idx_val]):
+        raise ValueError('The sample weights for validation set are all zero, consider using a different random state.')
+    if idx_train.shape[0] == 0 or idx_val.shape[0] == 0:
+        raise ValueError('Splitting %d samples into a train set and a validation set with validation_fraction=%r led to an empty set (%d and %d samples). Please either change validation_fraction, increase number of samples, or disable early_stopping.' % (n_samples, self.validation_fraction, idx_train.shape[0], idx_val.shape[0]))
+    validation_mask[idx_val] = True
+    return validation_mask
+Human Comment: Split the dataset between training set and validation set.
+
+Parameters
+----------
+y : ndarray of shape (n_samples, )
+    Target values.
+
+sample_mask : ndarray of shape (n_samples, )
+    A boolean array indicating whether each sample should be included
+    for validation set.
+
+Returns
+-------
+validation_mask : ndarray of shape (n_samples, )
+    Equal to True on the validation set, False on the training set.
+Model Generated Comment: Split the dataset between training set and validation set. Parameters ---------- y : ndarray of shape (n_samples, ) Target values. sample_mask :
+======================================================================
+
+ID: 4
+Code Snippet: def is_nested_list_like(obj: object) -> bool:
+    """
+    Check if the object is list-like, and that all of its elements
+    are also list-like.
+
+    Parameters
+    ----------
+    obj : The object to check
+
+    Returns
+    -------
+    is_list_like : bool
+        Whether `obj` has list-like properties.
+
+    Examples
+    --------
+    >>> is_nested_list_like([[1, 2, 3]])
+    True
+    >>> is_nested_list_like([{1, 2, 3}, {1, 2, 3}])
+    True
+    >>> is_nested_list_like(["foo"])
+    False
+    >>> is_nested_list_like([])
+    False
+    >>> is_nested_list_like([[1, 2, 3], 1])
+    False
+
+    Notes
+    -----
+    This won't reliably detect whether a consumable iterator (e. g.
+    a generator) is a nested-list-like without consuming the iterator.
+    To avoid consuming it, we always return False if the outer container
+    doesn't define `__len__`.
+
+    See Also
+    --------
+    is_list_like
+    """
+    return is_list_like(obj) and hasattr(obj, '__len__') and (len(obj) > 0) and all((is_list_like(item) for item in obj))
+Human Comment: Check if the object is list-like, and that all of its elements
+are also list-like.
+
+Parameters
+----------
+obj : The object to check
+
+Returns
+-------
+is_list_like : bool
+    Whether `obj` has list-like properties.
+
+Examples
+--------
+>>> is_nested_list_like([[1, 2, 3]])
+True
+>>> is_nested_list_like([{1, 2, 3}, {1, 2, 3}])
+True
+>>> is_nested_list_like(["foo"])
+False
+>>> is_nested_list_like([])
+False
+>>> is_nested_list_like([[1, 2, 3], 1])
+False
+
+Notes
+-----
+This won't reliably detect whether a consumable iterator (e. g.
+a generator) is a nested-list-like without consuming the iterator.
+To avoid consuming it, we always return False if the outer container
+doesn't define `__len__`.
+
+See Also
+--------
+is_list_like
+Model Generated Comment: Check if the object is list-like, and that all of its elements are also list- like. Parameters ---------- obj : The object to check Returns ------- is_list_like : bool Whether ocj has list-type properties. Examples -------- >>> is_nested_list _____like([[1, 2, 3]]) True >>> and is_nested_list ([1 2, 3, 1, 2 3]) False >>>
+======================================================================
+
+ID: 5
+Code Snippet: class Variable:
+    """
+    A template variable, resolvable against a given context. The variable may
+    be a hard-coded string (if it begins and ends with single or double quote
+    marks)::
+
+        >>> c = {'article': {'section':'News'}}
+        >>> Variable('article.section').resolve(c)
+        'News'
+        >>> Variable('article').resolve(c)
+        {'section': 'News'}
+        >>> class AClass: pass
+        >>> c = AClass()
+        >>> c.article = AClass()
+        >>> c.article.section = 'News'
+
+    (The example assumes VARIABLE_ATTRIBUTE_SEPARATOR is '.')
+    """
+    __slots__ = ('var', 'literal', 'lookups', 'translate', 'message_context')
+
+    def __init__(self, var):
+        self.var = var
+        self.literal = None
+        self.lookups = None
+        self.translate = False
+        self.message_context = None
+        if not isinstance(var, str):
+            raise TypeError('Variable must be a string or number, got %s' % type(var))
+        try:
+            if '.' in var or 'e' in var.lower():
+                self.literal = float(var)
+                if var[-1] == '.':
+                    raise ValueError
+            else:
+                self.literal = int(var)
+        except ValueError:
+            if var[0:2] == '_(' and var[-1] == ')':
+                self.translate = True
+                var = var[2:-1]
+            try:
+                self.literal = mark_safe(unescape_string_literal(var))
+            except ValueError:
+                if VARIABLE_ATTRIBUTE_SEPARATOR + '_' in var or var[0] == '_':
+                    raise TemplateSyntaxError("Variables and attributes may not begin with underscores: '%s'" % var)
+                self.lookups = tuple(var.split(VARIABLE_ATTRIBUTE_SEPARATOR))
+
+    def resolve(self, context):
+        """Resolve this variable against a given context."""
+        if self.lookups is not None:
+            value = self._resolve_lookup(context)
+        else:
+            value = self.literal
+        if self.translate:
+            is_safe = isinstance(value, SafeData)
+            msgid = value.replace('%', '%%')
+            msgid = mark_safe(msgid) if is_safe else msgid
+            if self.message_context:
+                return pgettext_lazy(self.message_context, msgid)
+            else:
+                return gettext_lazy(msgid)
+        return value
+
+    def __repr__(self):
+        return '<%s: %r>' % (self.__class__.__name__, self.var)
+
+    def __str__(self):
+        return self.var
+
+    def _resolve_lookup(self, context):
+        """
+        Perform resolution of a real variable (i.e. not a literal) against the
+        given context.
+
+        As indicated by the method's name, this method is an implementation
+        detail and shouldn't be called by external code. Use Variable.resolve()
+        instead.
+        """
+        current = context
+        try:
+            for bit in self.lookups:
+                try:
+                    if not hasattr(type(current), '__getitem__'):
+                        raise TypeError
+                    current = current[bit]
+                except (TypeError, AttributeError, KeyError, ValueError, IndexError):
+                    try:
+                        if isinstance(current, BaseContext) and getattr(type(current), bit):
+                            raise AttributeError
+                        current = getattr(current, bit)
+                    except (TypeError, AttributeError):
+                        if not isinstance(current, BaseContext) and bit in dir(current):
+                            raise
+                        try:
+                            current = current[int(bit)]
+                        except (IndexError, ValueError, KeyError, TypeError):
+                            raise VariableDoesNotExist('Failed lookup for key [%s] in %r', (bit, current))
+                if callable(current):
+                    if getattr(current, 'do_not_call_in_templates', False):
+                        pass
+                    elif getattr(current, 'alters_data', False):
+                        current = context.template.engine.string_if_invalid
+                    else:
+                        try:
+                            current = current()
+                        except TypeError:
+                            try:
+                                signature = inspect.signature(current)
+                            except ValueError:
+                                current = context.template.engine.string_if_invalid
+                            else:
+                                try:
+                                    signature.bind()
+                                except TypeError:
+                                    current = context.template.engine.string_if_invalid
+                                else:
+                                    raise
+        except Exception as e:
+            template_name = getattr(context, 'template_name', None) or 'unknown'
+            logger.debug("Exception while resolving variable '%s' in template '%s'.", bit, template_name, exc_info=True)
+            if getattr(e, 'silent_variable_failure', False):
+                current = context.template.engine.string_if_invalid
+            else:
+                raise
+        return current
+Human Comment: A template variable, resolvable against a given context. The variable may
+be a hard-coded string (if it begins and ends with single or double quote
+marks)::
+
+    >>> c = {'article': {'section':'News'}}
+    >>> Variable('article.section').resolve(c)
+    'News'
+    >>> Variable('article').resolve(c)
+    {'section': 'News'}
+    >>> class AClass: pass
+    >>> c = AClass()
+    >>> c.article = AClass()
+    >>> c.article.section = 'News'
+
+(The example assumes VARIABLE_ATTRIBUTE_SEPARATOR is '.')
+Model Generated Comment: A template variable, resolvable against a given context. The variable may be a hard-coded string (if it begins and ends with single or double quote marks):: >>> c = 'article': ’section':'News' >>> Variable('article.section').resolve(c) 'New '' article').reasolve (c)
+======================================================================
+
+ID: 6
+Code Snippet: def _read(self):
+    """
+        Read one page from the file. Return True if successful,
+        False if there were no more pages.
+        """
+    down_stack = [0]
+    self._baseline_v = None
+    while True:
+        byte = self.file.read(1)[0]
+        self._dtable[byte](self, byte)
+        if self._missing_font:
+            raise self._missing_font.to_exception()
+        name = self._dtable[byte].__name__
+        if name == '_push':
+            down_stack.append(down_stack[-1])
+        elif name == '_pop':
+            down_stack.pop()
+        elif name == '_down':
+            down_stack[-1] += 1
+        if self._baseline_v is None and len(getattr(self, 'stack', [])) == 3 and (down_stack[-1] >= 4):
+            self._baseline_v = self.v
+        if byte == 140:
+            return True
+        if self.state is _dvistate.post_post:
+            self.close()
+            return False
+Human Comment: Read one page from the file. Return True if successful,
+False if there were no more pages.
+Model Generated Comment: Read one page from the file. Return True if successful, False if there were no more pages.
+======================================================================
+
+ID: 7
+Code Snippet: def to_bazelrc_lines(self, dpav: DiscoverablePathsAndVersions) -> list[str]:
+    """Creates a bazelrc given an XLAConfigOptions.
+
+    Necessary paths are provided by the user, or retrieved via
+    `self._get_relevant_paths`.
+
+    Args:
+      dpav: DiscoverablePathsAndVersions that may hold user-specified paths and
+        versions. The dpav will then read from `self` to determine what to try
+        to auto-configure.
+
+    Returns:
+      The lines of a bazelrc.
+    """
+    dpav.get_relevant_paths_and_versions(self)
+    rc = []
+    build_and_test_tag_filters = list(_DEFAULT_BUILD_AND_TEST_TAG_FILTERS)
+    if self.os == OS.DARWIN:
+        build_and_test_tag_filters.append('-no_mac')
+    if self.host_compiler == HostCompiler.GCC:
+        rc.append(f'build --action_env GCC_HOST_COMPILER_PATH={dpav.gcc_path}')
+    elif self.host_compiler == HostCompiler.CLANG:
+        rc.append(f'build --action_env CLANG_COMPILER_PATH={dpav.clang_path}')
+        rc.append(f'build --repo_env CC={dpav.clang_path}')
+        rc.append(f'build --repo_env BAZEL_COMPILER={dpav.clang_path}')
+        self.compiler_options.append('-Wno-error=unused-command-line-argument')
+        if dpav.lld_path:
+            rc.append(f'build --linkopt --ld-path={dpav.lld_path}')
+    if self.backend == Backend.CPU:
+        build_and_test_tag_filters.append('-gpu')
+    elif self.backend == Backend.CUDA:
+        build_and_test_tag_filters.append('-rocm-only')
+        build_and_test_tag_filters.append('-sycl-only')
+        compiler_pair = (self.cuda_compiler, self.host_compiler)
+        if compiler_pair == (CudaCompiler.CLANG, HostCompiler.CLANG):
+            rc.append('build --config cuda_clang')
+            rc.append(f'build --action_env CLANG_CUDA_COMPILER_PATH={dpav.clang_path}')
+        elif compiler_pair == (CudaCompiler.NVCC, HostCompiler.CLANG):
+            rc.append('build --config cuda_nvcc')
+            rc.append(f'build --action_env CLANG_CUDA_COMPILER_PATH={dpav.clang_path}')
+        elif compiler_pair == (CudaCompiler.NVCC, HostCompiler.GCC):
+            rc.append('build --config cuda')
+        else:
+            raise NotImplementedError('CUDA clang with host compiler gcc not supported')
+        if dpav.cuda_version:
+            rc.append(f'build:cuda --repo_env HERMETIC_CUDA_VERSION={dpav.cuda_version}')
+        rc.append(f"build:cuda --repo_env HERMETIC_CUDA_COMPUTE_CAPABILITIES={','.join(dpav.cuda_compute_capabilities)}")
+        if dpav.cudnn_version:
+            rc.append(f'build:cuda --repo_env HERMETIC_CUDNN_VERSION={dpav.cudnn_version}')
+        if dpav.local_cuda_path:
+            rc.append(f'build:cuda --repo_env LOCAL_CUDA_PATH={dpav.local_cuda_path}')
+        if dpav.local_cudnn_path:
+            rc.append(f'build:cuda --repo_env LOCAL_CUDNN_PATH={dpav.local_cudnn_path}')
+        if dpav.local_nccl_path:
+            rc.append(f'build:cuda --repo_env LOCAL_NCCL_PATH={dpav.local_nccl_path}')
+        if not self.using_nccl:
+            rc.append('build --config nonccl')
+    elif self.backend == Backend.ROCM:
+        build_and_test_tag_filters.append('-cuda-only')
+        build_and_test_tag_filters.append('-sycl-only')
+        compiler_pair = (self.rocm_compiler, self.host_compiler)
+        if compiler_pair == (RocmCompiler.HIPCC, HostCompiler.CLANG):
+            rc.append('build --config rocm')
+            rc.append(f'build --action_env CLANG_COMPILER_PATH={dpav.clang_path}')
+        elif compiler_pair == (RocmCompiler.HIPCC, HostCompiler.GCC):
+            rc.append('build --config rocm')
+        else:
+            raise NotImplementedError('ROCm clang with host compiler not supported')
+    elif self.backend == Backend.SYCL:
+        build_and_test_tag_filters.append('-cuda-only')
+        build_and_test_tag_filters.append('-rocm-only')
+        rc.append('build --config sycl')
+    if dpav.ld_library_path:
+        rc.append(f'build --action_env LD_LIBRARY_PATH={dpav.ld_library_path}')
+    if dpav.clang_major_version in (16, 17, 18):
+        self.compiler_options.append('-Wno-gnu-offsetof-extensions')
+    if dpav.clang_major_version and dpav.clang_major_version >= 19:
+        self.compiler_options.append('-Wno-c23-extensions')
+    if dpav.clang_major_version is not None and dpav.clang_major_version < 16 or (dpav.gcc_major_version is not None and dpav.gcc_major_version < 13):
+        rc.append('build --define=xnn_enable_avxvnniint8=false')
+    if dpav.clang_major_version is not None and dpav.clang_major_version < 14 or (dpav.gcc_major_version is not None and dpav.gcc_major_version < 12):
+        rc.append('build --define=xnn_enable_avx512fp16=false')
+    rc.append(f'build --action_env PYTHON_BIN_PATH={self.python_bin_path}')
+    rc.append(f'build --python_path {self.python_bin_path}')
+    rc.append('test --test_env LD_LIBRARY_PATH')
+    rc.append('test --test_size_filters small,medium')
+    rc.extend([f'build --copt {compiler_option}' for compiler_option in self.compiler_options])
+    build_and_test_tag_filters = ','.join(build_and_test_tag_filters)
+    rc.append(f'build --build_tag_filters {build_and_test_tag_filters}')
+    rc.append(f'build --test_tag_filters {build_and_test_tag_filters}')
+    rc.append(f'test --build_tag_filters {build_and_test_tag_filters}')
+    rc.append(f'test --test_tag_filters {build_and_test_tag_filters}')
+    return rc
+Human Comment: Creates a bazelrc given an XLAConfigOptions.
+
+Necessary paths are provided by the user, or retrieved via
+`self._get_relevant_paths`.
+
+Args:
+  dpav: DiscoverablePathsAndVersions that may hold user-specified paths and
+    versions. The dpav will then read from `self` to determine what to try
+    to auto-configure.
+
+Returns:
+  The lines of a bazelrc.
+Model Generated Comment: Creates a bazelrc given an XLAConfigOptions. Necessary paths are provided by the user, or retrieved via self._get_relevant_paths. Args: dpav: DiscoverablePathsAndVersions that may hold user-specified paths and versions. The dpmav will then read from  self to determine what to try to auto-configure. Returns: The lines of a Bazelr
+======================================================================
+
+ID: 8
+Code Snippet: @tf_export(v1=['metrics.false_negatives_at_thresholds'])
+def false_negatives_at_thresholds(labels, predictions, thresholds, weights=None, metrics_collections=None, updates_collections=None, name=None):
+    """Computes false negatives at provided threshold values.
+
+  If `weights` is `None`, weights default to 1. Use weights of 0 to mask values.
+
+  Args:
+    labels: A `Tensor` whose shape matches `predictions`. Will be cast to
+      `bool`.
+    predictions: A floating point `Tensor` of arbitrary shape and whose values
+      are in the range `[0, 1]`.
+    thresholds: A python list or tuple of float thresholds in `[0, 1]`.
+    weights: Optional `Tensor` whose rank is either 0, or the same rank as
+      `labels`, and must be broadcastable to `labels` (i.e., all dimensions must
+      be either `1`, or the same as the corresponding `labels` dimension).
+    metrics_collections: An optional list of collections that `false_negatives`
+      should be added to.
+    updates_collections: An optional list of collections that `update_op` should
+      be added to.
+    name: An optional variable_scope name.
+
+  Returns:
+    false_negatives:  A float `Tensor` of shape `[len(thresholds)]`.
+    update_op: An operation that updates the `false_negatives` variable and
+      returns its current value.
+
+  Raises:
+    ValueError: If `predictions` and `labels` have mismatched shapes, or if
+      `weights` is not `None` and its shape doesn't match `predictions`, or if
+      either `metrics_collections` or `updates_collections` are not a list or
+      tuple.
+    RuntimeError: If eager execution is enabled.
+  """
+    if context.executing_eagerly():
+        raise RuntimeError('tf.metrics.false_negatives_at_thresholds is not supported when eager execution is enabled.')
+    with variable_scope.variable_scope(name, 'false_negatives', (predictions, labels, weights)):
+        values, update_ops = _confusion_matrix_at_thresholds(labels, predictions, thresholds, weights=weights, includes=('fn',))
+        fn_value = _aggregate_variable(values['fn'], metrics_collections)
+        if updates_collections:
+            ops.add_to_collections(updates_collections, update_ops['fn'])
+        return (fn_value, update_ops['fn'])
+Human Comment: Computes false negatives at provided threshold values.
+
+If `weights` is `None`, weights default to 1. Use weights of 0 to mask values.
+
+Args:
+  labels: A `Tensor` whose shape matches `predictions`. Will be cast to
+    `bool`.
+  predictions: A floating point `Tensor` of arbitrary shape and whose values
+    are in the range `[0, 1]`.
+  thresholds: A python list or tuple of float thresholds in `[0, 1]`.
+  weights: Optional `Tensor` whose rank is either 0, or the same rank as
+    `labels`, and must be broadcastable to `labels` (i.e., all dimensions must
+    be either `1`, or the same as the corresponding `labels` dimension).
+  metrics_collections: An optional list of collections that `false_negatives`
+    should be added to.
+  updates_collections: An optional list of collections that `update_op` should
+    be added to.
+  name: An optional variable_scope name.
+
+Returns:
+  false_negatives:  A float `Tensor` of shape `[len(thresholds)]`.
+  update_op: An operation that updates the `false_negatives` variable and
+    returns its current value.
+
+Raises:
+  ValueError: If `predictions` and `labels` have mismatched shapes, or if
+    `weights` is not `None` and its shape doesn't match `predictions`, or if
+    either `metrics_collections` or `updates_collections` are not a list or
+    tuple.
+  RuntimeError: If eager execution is enabled.
+Model Generated Comment: Computes false negatives at provided threshold values. If weights is None, weights default to 1. Use weights of 0 to mask values. Args: labels: A Tensor whose shape matches predictions. Will be cast to bool. predictions: A floating point  Tensour of arbitrary shape and whose values are in the range [0, 1]. thresholds: A. python list or tuple of float
+======================================================================
+
+ID: 9
+Code Snippet: class RNNBase(Module):
+    """Base class for RNN modules (RNN, LSTM, GRU).
+
+    Implements aspects of RNNs shared by the RNN, LSTM, and GRU classes, such as module initialization
+    and utility methods for parameter storage management.
+
+    .. note::
+        The forward method is not implemented by the RNNBase class.
+
+    .. note::
+        LSTM and GRU classes override some methods implemented by RNNBase.
+    """
+    __constants__ = ['mode', 'input_size', 'hidden_size', 'num_layers', 'bias', 'batch_first', 'dropout', 'bidirectional', 'proj_size']
+    __jit_unused_properties__ = ['all_weights']
+    mode: str
+    input_size: int
+    hidden_size: int
+    num_layers: int
+    bias: bool
+    batch_first: bool
+    dropout: float
+    bidirectional: bool
+    proj_size: int
+
+    def __init__(self, mode: str, input_size: int, hidden_size: int, num_layers: int=1, bias: bool=True, batch_first: bool=False, dropout: float=0.0, bidirectional: bool=False, proj_size: int=0, device=None, dtype=None) -> None:
+        factory_kwargs = {'device': device, 'dtype': dtype}
+        super().__init__()
+        self.mode = mode
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.num_layers = num_layers
+        self.bias = bias
+        self.batch_first = batch_first
+        self.dropout = float(dropout)
+        self.bidirectional = bidirectional
+        self.proj_size = proj_size
+        self._flat_weight_refs: list[Optional[weakref.ReferenceType[Parameter]]] = []
+        num_directions = 2 if bidirectional else 1
+        if not isinstance(dropout, numbers.Number) or not 0 <= dropout <= 1 or isinstance(dropout, bool):
+            raise ValueError('dropout should be a number in range [0, 1] representing the probability of an element being zeroed')
+        if dropout > 0 and num_layers == 1:
+            warnings.warn(f'dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout={dropout} and num_layers={num_layers}')
+        if not isinstance(hidden_size, int):
+            raise TypeError(f'hidden_size should be of type int, got: {type(hidden_size).__name__}')
+        if hidden_size <= 0:
+            raise ValueError('hidden_size must be greater than zero')
+        if num_layers <= 0:
+            raise ValueError('num_layers must be greater than zero')
+        if proj_size < 0:
+            raise ValueError('proj_size should be a positive integer or zero to disable projections')
+        if proj_size >= hidden_size:
+            raise ValueError('proj_size has to be smaller than hidden_size')
+        if mode == 'LSTM':
+            gate_size = 4 * hidden_size
+        elif mode == 'GRU':
+            gate_size = 3 * hidden_size
+        elif mode == 'RNN_TANH':
+            gate_size = hidden_size
+        elif mode == 'RNN_RELU':
+            gate_size = hidden_size
+        else:
+            raise ValueError('Unrecognized RNN mode: ' + mode)
+        self._flat_weights_names = []
+        self._all_weights = []
+        for layer in range(num_layers):
+            for direction in range(num_directions):
+                real_hidden_size = proj_size if proj_size > 0 else hidden_size
+                layer_input_size = input_size if layer == 0 else real_hidden_size * num_directions
+                w_ih = Parameter(torch.empty((gate_size, layer_input_size), **factory_kwargs))
+                w_hh = Parameter(torch.empty((gate_size, real_hidden_size), **factory_kwargs))
+                b_ih = Parameter(torch.empty(gate_size, **factory_kwargs))
+                b_hh = Parameter(torch.empty(gate_size, **factory_kwargs))
+                layer_params: tuple[Tensor, ...] = ()
+                if self.proj_size == 0:
+                    if bias:
+                        layer_params = (w_ih, w_hh, b_ih, b_hh)
+                    else:
+                        layer_params = (w_ih, w_hh)
+                else:
+                    w_hr = Parameter(torch.empty((proj_size, hidden_size), **factory_kwargs))
+                    if bias:
+                        layer_params = (w_ih, w_hh, b_ih, b_hh, w_hr)
+                    else:
+                        layer_params = (w_ih, w_hh, w_hr)
+                suffix = '_reverse' if direction == 1 else ''
+                param_names = ['weight_ih_l{}{}', 'weight_hh_l{}{}']
+                if bias:
+                    param_names += ['bias_ih_l{}{}', 'bias_hh_l{}{}']
+                if self.proj_size > 0:
+                    param_names += ['weight_hr_l{}{}']
+                param_names = [x.format(layer, suffix) for x in param_names]
+                for name, param in zip(param_names, layer_params):
+                    setattr(self, name, param)
+                self._flat_weights_names.extend(param_names)
+                self._all_weights.append(param_names)
+        self._init_flat_weights()
+        self.reset_parameters()
+
+    def _init_flat_weights(self):
+        self._flat_weights = [getattr(self, wn) if hasattr(self, wn) else None for wn in self._flat_weights_names]
+        self._flat_weight_refs = [weakref.ref(w) if w is not None else None for w in self._flat_weights]
+        self.flatten_parameters()
+
+    def __setattr__(self, attr, value):
+        if hasattr(self, '_flat_weights_names') and attr in self._flat_weights_names:
+            idx = self._flat_weights_names.index(attr)
+            self._flat_weights[idx] = value
+        super().__setattr__(attr, value)
+
+    def flatten_parameters(self) -> None:
+        """Reset parameter data pointer so that they can use faster code paths.
+
+        Right now, this works only if the module is on the GPU and cuDNN is enabled.
+        Otherwise, it's a no-op.
+        """
+        if len(self._flat_weights) != len(self._flat_weights_names):
+            return
+        for w in self._flat_weights:
+            if not isinstance(w, Tensor):
+                return
+        first_fw = self._flat_weights[0]
+        dtype = first_fw.dtype
+        for fw in self._flat_weights:
+            if not isinstance(fw, Tensor) or not fw.dtype == dtype or (not fw.is_cuda) or (not torch.backends.cudnn.is_acceptable(fw)):
+                return
+        unique_data_ptrs = {p.data_ptr() for p in self._flat_weights}
+        if len(unique_data_ptrs) != len(self._flat_weights):
+            return
+        with torch.cuda.device_of(first_fw):
+            import torch.backends.cudnn.rnn as rnn
+            with torch.no_grad():
+                if torch._use_cudnn_rnn_flatten_weight():
+                    num_weights = 4 if self.bias else 2
+                    if self.proj_size > 0:
+                        num_weights += 1
+                    torch._cudnn_rnn_flatten_weight(self._flat_weights, num_weights, self.input_size, rnn.get_cudnn_mode(self.mode), self.hidden_size, self.proj_size, self.num_layers, self.batch_first, bool(self.bidirectional))
+
+    def _apply(self, fn, recurse=True):
+        self._flat_weight_refs = []
+        ret = super()._apply(fn, recurse)
+        self._init_flat_weights()
+        return ret
+
+    def reset_parameters(self) -> None:
+        stdv = 1.0 / math.sqrt(self.hidden_size) if self.hidden_size > 0 else 0
+        for weight in self.parameters():
+            init.uniform_(weight, -stdv, stdv)
+
+    def check_input(self, input: Tensor, batch_sizes: Optional[Tensor]) -> None:
+        if not torch.jit.is_scripting():
+            if input.dtype != self._flat_weights[0].dtype and (not torch._C._is_any_autocast_enabled()):
+                raise ValueError(f'input must have the type {self._flat_weights[0].dtype}, got type {input.dtype}')
+        expected_input_dim = 2 if batch_sizes is not None else 3
+        if input.dim() != expected_input_dim:
+            raise RuntimeError(f'input must have {expected_input_dim} dimensions, got {input.dim()}')
+        if self.input_size != input.size(-1):
+            raise RuntimeError(f'input.size(-1) must be equal to input_size. Expected {self.input_size}, got {input.size(-1)}')
+
+    def get_expected_hidden_size(self, input: Tensor, batch_sizes: Optional[Tensor]) -> tuple[int, int, int]:
+        if batch_sizes is not None:
+            mini_batch = int(batch_sizes[0])
+        else:
+            mini_batch = input.size(0) if self.batch_first else input.size(1)
+        num_directions = 2 if self.bidirectional else 1
+        if self.proj_size > 0:
+            expected_hidden_size = (self.num_layers * num_directions, mini_batch, self.proj_size)
+        else:
+            expected_hidden_size = (self.num_layers * num_directions, mini_batch, self.hidden_size)
+        return expected_hidden_size
+
+    def check_hidden_size(self, hx: Tensor, expected_hidden_size: tuple[int, int, int], msg: str='Expected hidden size {}, got {}') -> None:
+        if hx.size() != expected_hidden_size:
+            raise RuntimeError(msg.format(expected_hidden_size, list(hx.size())))
+
+    def _weights_have_changed(self):
+        weights_changed = False
+        for ref, name in zip(self._flat_weight_refs, self._flat_weights_names):
+            weight = getattr(self, name) if hasattr(self, name) else None
+            if weight is not None and ref is not None and (ref() is not weight):
+                weights_changed = True
+                break
+        return weights_changed
+
+    def check_forward_args(self, input: Tensor, hidden: Tensor, batch_sizes: Optional[Tensor]):
+        self.check_input(input, batch_sizes)
+        expected_hidden_size = self.get_expected_hidden_size(input, batch_sizes)
+        self.check_hidden_size(hidden, expected_hidden_size)
+
+    def permute_hidden(self, hx: Tensor, permutation: Optional[Tensor]):
+        if permutation is None:
+            return hx
+        return _apply_permutation(hx, permutation)
+
+    def extra_repr(self) -> str:
+        s = '{input_size}, {hidden_size}'
+        if self.proj_size != 0:
+            s += ', proj_size={proj_size}'
+        if self.num_layers != 1:
+            s += ', num_layers={num_layers}'
+        if self.bias is not True:
+            s += ', bias={bias}'
+        if self.batch_first is not False:
+            s += ', batch_first={batch_first}'
+        if self.dropout != 0:
+            s += ', dropout={dropout}'
+        if self.bidirectional is not False:
+            s += ', bidirectional={bidirectional}'
+        return s.format(**self.__dict__)
+
+    def _update_flat_weights(self):
+        if not torch.jit.is_scripting():
+            if self._weights_have_changed():
+                self._init_flat_weights()
+
+    def __getstate__(self):
+        self._update_flat_weights()
+        state = self.__dict__.copy()
+        del state['_flat_weight_refs']
+        return state
+
+    def __setstate__(self, d):
+        super().__setstate__(d)
+        if 'all_weights' in d:
+            self._all_weights = d['all_weights']
+        if 'proj_size' not in d:
+            self.proj_size = 0
+        if not isinstance(self._all_weights[0][0], str):
+            num_layers = self.num_layers
+            num_directions = 2 if self.bidirectional else 1
+            self._flat_weights_names = []
+            self._all_weights = []
+            for layer in range(num_layers):
+                for direction in range(num_directions):
+                    suffix = '_reverse' if direction == 1 else ''
+                    weights = ['weight_ih_l{}{}', 'weight_hh_l{}{}', 'bias_ih_l{}{}', 'bias_hh_l{}{}', 'weight_hr_l{}{}']
+                    weights = [x.format(layer, suffix) for x in weights]
+                    if self.bias:
+                        if self.proj_size > 0:
+                            self._all_weights += [weights]
+                            self._flat_weights_names.extend(weights)
+                        else:
+                            self._all_weights += [weights[:4]]
+                            self._flat_weights_names.extend(weights[:4])
+                    elif self.proj_size > 0:
+                        self._all_weights += [weights[:2]] + [weights[-1:]]
+                        self._flat_weights_names.extend(weights[:2] + [weights[-1:]])
+                    else:
+                        self._all_weights += [weights[:2]]
+                        self._flat_weights_names.extend(weights[:2])
+            self._flat_weights = [getattr(self, wn) if hasattr(self, wn) else None for wn in self._flat_weights_names]
+        self._flat_weight_refs = [weakref.ref(w) if w is not None else None for w in self._flat_weights]
+
+    @property
+    def all_weights(self) -> list[list[Parameter]]:
+        return [[getattr(self, weight) for weight in weights] for weights in self._all_weights]
+
+    def _replicate_for_data_parallel(self):
+        replica = super()._replicate_for_data_parallel()
+        replica._flat_weights = replica._flat_weights[:]
+        replica._flat_weights_names = replica._flat_weights_names[:]
+        return replica
+Human Comment: Base class for RNN modules (RNN, LSTM, GRU).
+
+Implements aspects of RNNs shared by the RNN, LSTM, and GRU classes, such as module initialization
+and utility methods for parameter storage management.
+
+.. note::
+    The forward method is not implemented by the RNNBase class.
+
+.. note::
+    LSTM and GRU classes override some methods implemented by RNNBase.
+Model Generated Comment: Base class for RNN modules (RNN, LSTM, GRU). Implements aspects of RNNs shared by the RNN, LESTM, and GRU classes, such as module initialization and utility methods for parameter storage management... note:: The forward method is not implemented by the rNNBase class. ., note: LSSM and GRu classes override some methods implemented by RNNBas.
+======================================================================
+
