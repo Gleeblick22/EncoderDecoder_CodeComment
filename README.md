@@ -31,16 +31,6 @@ We collected code-comment datasets from well-documented, high-popularity open-so
 
 ![Pipeline overview](results/fig_pipeline_overview.png)
 
-```mermaid
-flowchart TD
-    A[Data collection<br/>GitHub repos: Python, Java] --> B[Data preprocessing<br/>Extract, clean, split, tokenize]
-    B --> C1[T5 model training<br/>60M parameters, 3 epochs]
-    B --> C2[BART model training<br/>110M parameters, 3 epochs]
-    C1 --> D[Performance evaluation<br/>BLEU, ROUGE, METEOR, Smoothed BLEU]
-    C2 --> D
-    D --> E[Comparative analysis<br/>BART outperforms T5 on all metrics]
-```
-
 ---
 
 ## Datasets
