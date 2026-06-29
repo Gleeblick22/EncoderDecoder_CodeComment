@@ -35,14 +35,41 @@ We collected code-comment datasets from well-documented, high-popularity open-so
 
 ## Datasets
 
-| Property | Python subset | Java subset |
-|---|---|---|
-| Source repositories | Django, Flask, Keras, Matplotlib, Pandas, Requests, PyTorch, Scikit-learn, TensorFlow | Spring Framework, JUnit, Apache Spark |
-| Selection criteria | Popularity (≥1k forks/stars), active maintenance, domain diversity, ecosystem relevance | Same |
-| Extraction method | AST-based docstring parsing | Regex-based block/line comment parsing |
-| Split | ~70% train / 15% validation / 15% test | ~70% train / 15% validation / 15% test |
+Datasets were constructed from curated, high-popularity open-source GitHub repositories, selected for active maintenance, domain diversity, and documentation quality.
 
-> **Note:** Raw cloned repositories and generated datasets are excluded from version control (see `.gitignore`). Run the data collection scripts below to regenerate them locally.
+### Python repositories
+
+| Repository | Domain | Stars | Forks | Size (MB) | URL |
+|---|---|---|---|---|---|
+| Django | Web framework | 70k+ | 30k+ | 308 | [github.com/django/django](https://github.com/django/django) |
+| Flask | Lightweight web framework | 65k+ | 15k+ | 339 | [github.com/pallets/flask](https://github.com/pallets/flask) |
+| Keras | Neural network API | 60k+ | 20k+ | 51.7 | [github.com/keras-team/keras](https://github.com/keras-team/keras) |
+| Matplotlib | Data visualization library | 18k+ | 7k+ | 518 | [github.com/matplotlib/matplotlib](https://github.com/matplotlib/matplotlib) |
+| Pandas | Data analysis library | 40k+ | 18k+ | 412 | [github.com/pandas-dev/pandas](https://github.com/pandas-dev/pandas) |
+| PyTorch | Deep learning framework | 70k+ | 19k+ | 1160 | [github.com/pytorch/pytorch](https://github.com/pytorch/pytorch) |
+| Requests | HTTP library | 50k+ | 10k+ | 18.6 | [github.com/psf/requests](https://github.com/psf/requests) |
+| Scikit-learn | Machine learning library | 60k+ | 25k+ | 186 | [github.com/scikit-learn/scikit-learn](https://github.com/scikit-learn/scikit-learn) |
+| TensorFlow | Deep learning framework | 180k+ | 88k+ | 1350 | [github.com/tensorflow/tensorflow](https://github.com/tensorflow/tensorflow) |
+
+### Java repositories
+
+| Repository | Domain | Stars | Forks | Size (MB) | URL |
+|---|---|---|---|---|---|
+| Android Architecture | Android sample applications | 30k+ | 10k+ | 27.5 | [github.com/android/architecture-components-samples](https://github.com/android/architecture-components-samples) |
+| HikariCP | JDBC connection pool | 18k+ | 3k+ | 6.13 | [github.com/brettwooldridge/HikariCP](https://github.com/brettwooldridge/HikariCP) |
+| Java Design Patterns | Design pattern implementations | 85k+ | 28k+ | 65.8 | [github.com/iluwatar/java-design-patterns](https://github.com/iluwatar/java-design-patterns) |
+| JUnit4 | Unit testing framework (v4) | 9k+ | 2k+ | 28.0 | [github.com/junit-team/junit4](https://github.com/junit-team/junit4) |
+| JUnit5 | Unit testing framework (v5) | 10k+ | 2k+ | 691 | [github.com/junit-team/junit5](https://github.com/junit-team/junit5) |
+| Apache Maven | Build automation tool | 5k+ | 2k+ | 82.0 | [github.com/apache/maven](https://github.com/apache/maven) |
+| Apache Spark | Big data processing framework | 35k+ | 26k+ | 646 | [github.com/apache/spark](https://github.com/apache/spark) |
+| Sunflower | Android sample project | 17k+ | 3k+ | 16.6 | [github.com/android/sunflower](https://github.com/android/sunflower) |
+| Scrapy (Java wrapper) | Web scraping framework (mixed) | 45k+ | 10k+ | 32.4 | [github.com/scrapy/scrapy](https://github.com/scrapy/scrapy) |
+
+**Selection criteria:** popularity (high stars/forks), active maintenance, domain diversity, and high documentation quality, ensuring a representative and high-quality dataset for code-comment generation.
+
+**Split:** ~70% train / 15% validation / 15% test per language.
+
+> **Note:** Raw cloned repositories (`data_collection/raw_cloned_repos/`) are excluded from version control via `.gitignore`. Run the data collection scripts below to generate the processed datasets locally.
 
 ---
 
