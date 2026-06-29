@@ -1,4 +1,3 @@
-# EncoderDecoder_CodeComment
 
 # Automated Code Comments Generation Using Large Language Models: Empirical Evaluation of T5 and BART
 
@@ -29,6 +28,8 @@ We collected code-comment datasets from well-documented, high-popularity open-so
 ---
 
 ## Study Design / Pipeline Overview
+
+![Pipeline overview](results/fig_pipeline_overview.png)
 
 ```mermaid
 flowchart TD
@@ -83,24 +84,25 @@ EncoderDecoder_CodeComment/
 ├── .gitignore
 ├── .gitattributes
 ├── LICENSE
-├── environment.yaml               # Conda environment definition
+├── CITATION.cff
+├── environment.yaml                # Conda environment definition
 │
-├── data_collection/                # Dataset builder
-│   ├── extract_python.py           # AST-based docstring extraction
-│   ├── extract_java.py             # Regex-based comment extraction
-│   ├── merge_and_clean.py          # Merge Python + Java, clean entries
-│   ├── split_dataset.py            # 70/15/15 train/val/test split
+├── data_collection/                 # Dataset builder
+│   ├── extract_python.py            # AST-based docstring extraction
+│   ├── extract_java.py              # Regex-based comment extraction
+│   ├── merge_and_clean.py           # Merge Python + Java, clean entries
+│   ├── split_dataset.py             # 70/15/15 train/val/test split
 │   ├── compare_test_data.py
-│   ├── raw_cloned_repos/           # Ignored: cloned GitHub repos
-│   ├── combined/                   # Python + Java combined dataset
+│   ├── raw_cloned_repos/            # Ignored: cloned GitHub repos
+│   ├── combined/                    # Python + Java combined dataset
 │   ├── python_only/
 │   ├── java_only/
 │   └── json_full_dataset.json
 │
 ├── T5_codecomment_Model/
 │   ├── T5_codecomment_python_java/
-│   │   ├── code/                   # Tokenize, train, infer, evaluate scripts
-│   │   ├── models/                 # Fine-tuned checkpoints (gitignored)
+│   │   ├── code/                    # Tokenize, train, infer, evaluate scripts
+│   │   ├── models/                  # Fine-tuned checkpoints (gitignored)
 │   │   ├── Tokenized_data/
 │   │   └── evaluation_results/
 │   ├── T5_codecomment_python/
@@ -116,8 +118,8 @@ EncoderDecoder_CodeComment/
 │   └── BART_codecomment_java/
 │
 └── results/
-    └── figures/
-        └── fig_results_comparison.png   # T5 vs BART metric comparison chart
+    ├── fig_results_comparison.png   # T5 vs BART metric comparison chart
+    └── fig_pipeline_overview.png    # Colorized pipeline diagram
 ```
 
 ---
@@ -189,7 +191,7 @@ python evaluate_t5_python_java.py \
 
 Evaluated on the combined Python + Java test set (3-epoch training):
 
-![T5 vs BART results comparison](results/figures/fig_results_comparison.png)
+![T5 vs BART results comparison](results/fig_results_comparison.png)
 
 | Metric | T5 | BART | BART improvement |
 |---|---|---|---|
@@ -251,6 +253,8 @@ IEEE Access, vol. 13, pp. 141420–141433, 2025, doi: 10.1109/ACCESS.2025.359760
 ```
 
 Paper link: https://ieeexplore.ieee.org/document/11122447
+
+This repository also includes a `CITATION.cff` file — GitHub displays a "Cite this repository" button automatically.
 
 ---
 
