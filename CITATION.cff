@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this software or build on this research, please cite the paper below."
+title: "Automated Code Comments Generation Using Large Language Models: Empirical Evaluation of T5 and BART"
+type: software
+authors:
+  - family-names: "Ghale"
+    given-names: "Dhan Prasad"
+    affiliation: "Melbourne Institute of Technology"
+  - family-names: "Dabbagh"
+    given-names: "Mohammad"
+    affiliation: "Melbourne Institute of Technology"
+    email: "mdabbagh@mit.edu.au"
+repository-code: "https://github.com/Gleeblick22/EncoderDecoder_CodeComment"
+preferred-citation:
+  type: article
+  title: "Automated Code Comments Generation Using Large Language Models: Empirical Evaluation of T5 and BART"
+  authors:
+    - family-names: "Ghale"
+      given-names: "Dhan Prasad"
+    - family-names: "Dabbagh"
+      given-names: "Mohammad"
+  journal: "IEEE Access"
+  volume: 13
+  start: 141420
+  end: 141433
+  year: 2025
+  doi: "10.1109/ACCESS.2025.3597601"
+  url: "https://ieeexplore.ieee.org/document/11122447"
+license: MIT
